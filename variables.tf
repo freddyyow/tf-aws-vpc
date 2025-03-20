@@ -1,32 +1,31 @@
 variable "create_public_subnets" {
   description = "specify whether public subnets are required"
   type        = bool
-
   default = true
 
 }
 
 variable "create_private_subnets" {
+  description = "specify whether private subnets are required"
   type = bool
-
   default = true
 }
 
 variable "create_private_subnet_acl" {
+  description = "Will the private subnets have a separate network ACL? Defaults to false"
   type = bool
-
-  default = true
+  default = false
 }
 
 variable "project" {
+    description = "project name infra being deployed for. Used in local_prefix variable for naming/tagging"
   default = "vrume"
 
 }
 
 variable "target_environment" {
-  description = "envrionment to be deployed"
+  description = "Envrionment to be deployed"
   type        = string
-
   default = "dev"
 
   validation {
@@ -36,12 +35,9 @@ variable "target_environment" {
 
 }
 
-
-
 variable "vpc_cidr_block" {
   description = "CIDR block for use by subnets inside of your VPC"
   type        = string
-
   default = "10.0.0.0/16"
 
 }
@@ -49,11 +45,11 @@ variable "vpc_cidr_block" {
 variable "tags" {
   description = "additional tags for the resource that are not required tags"
   type        = map(string)
-
   default = {}
 }
 
 variable "private_subnet_names" {
+  description = "used if you want to manually map subnet names to subnets"
   type    = list(string)
   default = []
 
