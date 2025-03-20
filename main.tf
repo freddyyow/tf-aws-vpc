@@ -33,17 +33,18 @@ resource "aws_subnet" "private" {
 }
 
 resource "aws_route_table" "private" {
+    count = length(var.private_subnet_cidrs)
   vpc_id = aws_vpc.main.id
   tags = merge(var.tags, local.common_tags)
 }
 
 resource "aws_route_table_association" "private" {
   count = var.create_private_subnets ? length(var.private_subnet_cidrs) : 0
-  subnet_id      = aws_subnet.private[count.index].id
-  route_table_id = aws_route_table.private.id
+  subnet_id = element(aws_subnet.private.*.id, count.index)
+  route_table_id = element(aws_route_table.private.*.id, count.index)
+  #subnet_id      = aws_subnet.private[count.index].id
+  #route_table_id = aws_route_table.private.id
 }
-
-
 
 resource "aws_subnet" "public" {
     count = var.create_public_subnets ? length(var.public_subnet_cidrs) : 0
@@ -96,3 +97,39 @@ resource "aws_internet_gateway" "igw" {
   vpc_id = aws_vpc.main.id
   tags = merge(var.tags, local.common_tags)
 }
+
+resource "aws_network_acl" "public" {
+  vpc_id = aws_vpc.main.id
+#  subnet_ids = 
+
+  
+}
+
+resource "aws_network_acl" "private" {
+  #count = var.create_private_subnets ? length(var.private_subnet_cidrs) : 0
+  vpc_id = aws_vpc.main.id
+ # subnet_ids = toset(element(aws_subnet.private.*.id, count.index))
+}
+
+resource "aws_network_acl_association" "private" {
+    count = var.create_private_subnets ? length(var.private_subnet_cidrs) : 0
+    network_acl_id = aws_network_acl.private.id
+    subnet_id = aws_subnet.private[count.index].id
+  
+}
+
+# resource "aws_network_acl_rule" "private_inbound" {
+#   count = var.create_private_subnets ? length(var.private_inbound_acl_rules) : 0
+#   network_acl_id = 
+# }
+
+# resource "aws_network_acl_rule" "private_outbound" {
+  
+# }
+# resource "aws_network_acl" "private" {
+#   vpc_id = aws_vpc.main.id
+# }
+#aws_network_acl
+#aws_network_acl_assocation
+#aws_network_acl_rule
+#vpc-03523668724c41c27
